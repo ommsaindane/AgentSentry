@@ -1,0 +1,19 @@
+rules:
+  - name: no_shell_rm_rf
+    pattern: "\\brm\\s+-rf\\b|\\brmdir\\s+/s\\s+/q\\b"
+    severity: critical
+    decision: block
+    enabled: true
+    description: "Blocks destructive shell deletion commands."
+  - name: no_secrets
+    pattern: "(?i)(api[_-]?key|secret|token)\\s*[:=]\\s*['\\\"]?[A-Za-z0-9-_]{16,}['\\\"]?"
+    severity: warning
+    decision: warn
+    enabled: true
+    description: "Flags likely hardcoded secrets."
+  - name: no_system_write
+    pattern: "\\b(/etc/|C:\\\\Windows\\\\|C:\\\\Program Files\\\\)\\b"
+    severity: warning
+    decision: warn
+    enabled: true
+    description: "Flags writes to protected system paths."

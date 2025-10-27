@@ -1,0 +1,85 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+.env
+
+# Node
+node_modules/
+dist/
+.build/
+.next/
+.vite/
+
+# Editor/OS
+.DS_Store
+.idea/
+.vscode/
+
+# Docker
+*.log
+.eggs/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Env files
+infra/.env
+infra/.env.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+.env
+
+# Pip/Poetry local
+pip-wheel-metadata/
+.poetry/
+.poetry_cache/
+
+# Node
+node_modules/
+dist/
+.build/
+.next/
+.vite/
+pnpm-lock.yaml
+yarn.lock
+
+# Editor/OS
+.DS_Store
+.idea/
+.vscode/
+Thumbs.db
+
+# Docker and runtime logs
+*.log
+.eggs/
+.pytest_cache/
+.coverage
+htmlcov/
+*.sqlite3
+*.db
+*.sqlite
+
+# Alembic migration cache
+alembic/versions/__pycache__/
+
+# Env files
+infra/.env
+infra/.env.local
+
+# Local data volumes (if any are bound)
+data/
+storage/
+
+# Local dev SQLite files
+agentsentry.db
+api/agentsentry.db

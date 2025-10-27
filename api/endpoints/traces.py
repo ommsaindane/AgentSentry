@@ -5,9 +5,10 @@ from api.db import get_db
 from api.models import Trace as TraceModel, Session as SessionModel, DecisionEnum
 import uuid
 from agentsentry.verifier.static_rules import StaticVerifier
+from api.verifier_store import store
 
 router = APIRouter(prefix="/traces", tags=["traces"])
-_verifier = StaticVerifier()
+_verifier = store.get()
 
 @router.post("", response_model=Dict)
 def ingest_trace(payload: Dict[str, Any], db: OrmSession = Depends(get_db)):

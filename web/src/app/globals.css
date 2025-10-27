@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  /* Tailwind v4 exposes utilities via CSS variables; you can still use utility classes in JSX */
+  background-color: var(--color-white, #ffffff);
+  color: var(--color-gray-900, #111827);
+}
+
+.container-app {
+  /* Tailwind v4 utility variables are available; for quick spacing use custom CSS or classes in JSX */
+  max-width: 64rem; /* ~max-w-5xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.5rem;
+}
+
+.navbar {
+  border-bottom: 1px solid rgb(229 231 235); /* gray-200 */
+  margin-bottom: 1.5rem;
+}

@@ -4,6 +4,7 @@ export type Rule = {
   id: number;
   name: string;
   pattern: string;
+  rule_type: "regex" | "nlp";
   severity: "info" | "warning" | "critical";
   decision: "allow" | "warn" | "block";
   enabled: boolean;

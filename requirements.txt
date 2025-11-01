@@ -29,6 +29,11 @@ requests==2.32.3
 regex==2024.9.11
 PyYAML==6.0.2
 
+# NLP (spaCy) for NLP rules
+spacy==3.7.5
+# Lightweight English model; installed via wheel URL to avoid runtime download
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+
 # Testing
 pytest==8.3.3
 pytest-cov==5.0.0

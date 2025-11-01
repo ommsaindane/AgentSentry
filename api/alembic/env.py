@@ -9,7 +9,8 @@ from sqlalchemy import engine_from_config, pool
 # Ensure the repo root (two levels up from this file) is on sys.path
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+    # Append to avoid shadowing stdlib modules like 'queue' by project modules (e.g., api/queue.py)
+    sys.path.append(str(ROOT))
 
 # Now imports from the project work
 from api.models import Base  # noqa: E402

@@ -33,8 +33,8 @@ export default async function Page() {
                   <td className="p-2">{s.title ?? "-"}</td>
                   <td className="p-2">{s.created_at ?? "-"}</td>
                   <td className="p-2">
-                    <a className="text-blue-600 hover:underline" href={`/traces/${encodeURIComponent(s.id)}`}>
-                      View traces (by id)
+                    <a className="text-blue-600 hover:underline" href={`/sessions/${encodeURIComponent(s.id)}`}>
+                      View traces
                     </a>
                     <span className="text-gray-400 mx-2">|</span>
                     <a

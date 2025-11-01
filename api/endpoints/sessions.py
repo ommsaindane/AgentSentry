@@ -3,7 +3,7 @@ from typing import List, Dict, Optional
 from sqlalchemy.orm import Session as OrmSession
 from sqlalchemy import select
 from api.db import get_db
-from api.models import Session as SessionModel
+from api.models import Session as SessionModel, Trace as TraceModel
 import uuid
 from datetime import datetime
 
@@ -73,3 +73,38 @@ def delete_session(session_id: str, db: OrmSession = Depends(get_db)):
     db.delete(obj)
     db.commit()
     return {"id": session_id, "deleted": True}
+
+@router.get("/{session_id}/traces", response_model=List[Dict])
+def list_traces_for_session(
+    session_id: str,
+    db: OrmSession = Depends(get_db),
+    limit: int = Query(50, ge=1, le=200),
+    cursor: Optional[str] = Query(None, description="Return items created before this ISO timestamp"),
+):
+    # If session not found, return empty list (avoids UX errors for stale links)
+    if not db.get(SessionModel, session_id):
+        return []
+
+    stmt = (
+        select(TraceModel)
+        .where(TraceModel.session_id == session_id)
+        .order_by(TraceModel.created_at.desc())
+    )
+    if cursor:
+        try:
+            cursor_dt = datetime.fromisoformat(cursor)
+            stmt = stmt.where(TraceModel.created_at < cursor_dt)
+        except ValueError:
+            raise HTTPException(status_code=422, detail="Invalid cursor timestamp format; use ISO 8601")
+
+    rows = db.execute(stmt.limit(limit)).scalars().all()
+    return [
+        {
+            "id": t.id,
+            "role": t.role,
+            "decision": t.decision.value,
+            "reasons": t.reasons or [],
+            "created_at": t.created_at.isoformat() if t.created_at else None,
+        }
+        for t in rows
+    ]

@@ -40,6 +40,8 @@ services:
       APP_ENV: ${APP_ENV:-dev}
       DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg2://postgres:postgres@db:5432/agentsentry}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      # Optional: spaCy language model name
+      SPACY_MODEL: ${SPACY_MODEL:-en_core_web_sm}
       PYTHONPATH: /workspace
     depends_on:
       db:
@@ -62,6 +64,12 @@ services:
       APP_ENV: ${APP_ENV:-dev}
       DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg2://postgres:postgres@db:5432/agentsentry}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      # Dynamic verifier (OpenRouter only)
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      # Optional prompt extension injected into classifier prompt
+      DYNAMIC_PROMPT_EXTENSION: ${DYNAMIC_PROMPT_EXTENSION:-}
+      # Optional: spaCy language model name
+      SPACY_MODEL: ${SPACY_MODEL:-en_core_web_sm}
       PYTHONPATH: /workspace
     depends_on:
       db:

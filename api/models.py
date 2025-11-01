@@ -45,6 +45,7 @@ class Rule(Base):
     name: Mapped[str] = mapped_column(String(128), unique=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     pattern: Mapped[str] = mapped_column(Text)  # regex or glob
+    rule_type: Mapped[str] = mapped_column(String(16), default="regex")  # regex | nlp
     severity: Mapped[str] = mapped_column(String(16))  # "info" | "warning" | "critical"
     decision: Mapped[str] = mapped_column(String(16), default="warn")  # "allow" | "warn" | "block"
     enabled: Mapped[int] = mapped_column(Integer, default=1)

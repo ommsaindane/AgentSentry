@@ -25,6 +25,7 @@ def db_rules_to_static(db: OrmSession) -> List[Rule]:
                     decision=r.decision,
                     enabled=bool(r.enabled),
                     description=r.description,
+                    rule_type=getattr(r, "rule_type", "regex") or "regex",
                 )
             )
         except Exception:

@@ -20,6 +20,9 @@ type Severity = (typeof severities)[number];
 const decisions = ["allow", "warn", "block"] as const;
 type Decision = (typeof decisions)[number];
 
+const ruleTypes = ["regex", "nlp"] as const;
+type RuleType = (typeof ruleTypes)[number];
+
 export default function RulesPage() {
   const [rules, setRules] = useState<Rule[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +31,7 @@ export default function RulesPage() {
   const [form, setForm] = useState<{
     name: string;
     pattern: string;
+    rule_type: RuleType;
     severity: Severity;
     decision: Decision;
     enabled: boolean;
@@ -35,6 +39,7 @@ export default function RulesPage() {
   }>({
     name: "",
     pattern: "",
+    rule_type: "regex",
     severity: "warning",
     decision: "warn",
     enabled: true,
@@ -64,6 +69,7 @@ export default function RulesPage() {
       setForm({
         name: "",
         pattern: "",
+        rule_type: "regex",
         severity: "warning",
         decision: "warn",
         enabled: true,
@@ -132,16 +138,21 @@ export default function RulesPage() {
     const v = (prompt("Decision (allow|warn|block)", current) ?? current) as string;
     return decisions.includes(v as Decision) ? (v as Decision) : current;
   }
+  function promptRuleType(current: RuleType): RuleType {
+    const v = (prompt("Type (regex|nlp)", current) ?? current) as string;
+    return ruleTypes.includes(v as RuleType) ? (v as RuleType) : current;
+  }
 
   async function onEdit(r: Rule) {
     const name = ((prompt("Name", r.name) ?? r.name) as string).trim();
     const pattern = ((prompt("Pattern", r.pattern) ?? r.pattern) as string).trim();
     const severity = promptSeverity(r.severity);
     const decision = promptDecision(r.decision);
+    const rule_type = promptRuleType(r.rule_type);
     const description = ((prompt("Description", r.description ?? "") ?? (r.description ?? "")) as string).trim();
 
     try {
-      await updateRule(r.id, { name, pattern, severity, decision, description });
+      await updateRule(r.id, { name, pattern, rule_type, severity, decision, description });
       await refresh();
     } catch (e: any) {
       alert(e?.message ?? "Update failed");
@@ -188,11 +199,22 @@ export default function RulesPage() {
         />
         <input
           className="border rounded p-2 md:col-span-2"
-          placeholder="Pattern (regex)"
+          placeholder={form.rule_type === "regex" ? "Pattern (regex)" : "Pattern (plain phrase or phrases | separated)"}
           value={form.pattern}
           onChange={(e) => setForm({ ...form, pattern: e.target.value })}
           required
         />
+        <select
+          className="border rounded p-2"
+          value={form.rule_type}
+          onChange={(e) => setForm({ ...form, rule_type: e.target.value as RuleType })}
+        >
+          {ruleTypes.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
         <select
           className="border rounded p-2"
           value={form.severity}
@@ -247,6 +269,7 @@ export default function RulesPage() {
               <tr>
                 <th className="text-left p-2">ID</th>
                 <th className="text-left p-2">Name</th>
+                <th className="text-left p-2">Type</th>
                 <th className="text-left p-2">Pattern</th>
                 <th className="text-left p-2">Severity</th>
                 <th className="text-left p-2">Decision</th>
@@ -259,6 +282,7 @@ export default function RulesPage() {
                 <tr key={r.id} className="border-t align-top">
                   <td className="p-2">{r.id}</td>
                   <td className="p-2">{r.name}</td>
+                  <td className="p-2">{r.rule_type}</td>
                   <td className="p-2">
                     <code className="text-xs">{r.pattern}</code>
                   </td>
@@ -286,7 +310,7 @@ export default function RulesPage() {
               ))}
               {rules.length === 0 && (
                 <tr>
-                  <td className="p-2 text-gray-500" colSpan={7}>
+                  <td className="p-2 text-gray-500" colSpan={8}>
                     No rules yet.
                   </td>
                 </tr>

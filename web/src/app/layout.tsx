@@ -17,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <nav className="flex gap-4 text-sm text-gray-600">
                 <a href="/">Sessions</a>
                 <a href="/rules">Rules</a>
+                <a href="/audit">Audit</a>
               </nav>
             </div>
             <div className="text-xs text-gray-500">API: {process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}</div>

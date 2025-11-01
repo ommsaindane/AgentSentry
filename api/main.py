@@ -1,12 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from api.settings import settings
 from api.endpoints.health import router as health_router
 from api.endpoints.sessions import router as sessions_router
 from api.endpoints.traces import router as traces_router
 from api.endpoints.rules import router as rules_router
+from api.endpoints.audit import router as audit_router
 from api.db import get_db
 from api.verifier_store import store
+from api.auth import require_api_key
 
 app = FastAPI(
     title=settings.app_name,
@@ -56,7 +58,7 @@ def index():
 
 # Simple reload endpoint
 @app.post("/rules/reload")
-def reload_rules():
+def reload_rules(_: None = Depends(require_api_key)):
     from api.db import SessionLocal
     db = SessionLocal()
     try:
@@ -70,3 +72,4 @@ app.include_router(health_router)
 app.include_router(sessions_router)
 app.include_router(traces_router)
 app.include_router(rules_router)
+app.include_router(audit_router)

@@ -30,7 +30,21 @@ export type TraceDetail = {
   created_at: string;
 };
 
+export type TraceListItem = {
+  id: string;
+  role: string;
+  decision: "allow" | "warn" | "block";
+  reasons: Array<{ rule: string; severity: string; decision: string; description?: string }>;
+  created_at: string;
+};
+
 export const api = {
   listSessions: () => http<SessionListItem[]>("/sessions"),
   getTrace: (id: string) => http<TraceDetail>(`/traces/${id}`),
+  listTracesForSession: (sessionId: string) =>
+    http<TraceListItem[]>(`/sessions/${encodeURIComponent(sessionId)}/traces`),
+  listAuditLogs: (q?: { action?: string; target_type?: string }) =>
+    http<Array<{ id: number; actor: string; action: string; target_type: string; target_id: string; details: any; created_at: string }>>(
+      `/audit/logs${q?.action || q?.target_type ? `?${new URLSearchParams(q as any).toString()}` : ""}`
+    ),
 };

@@ -17,3 +17,10 @@ rules:
     decision: warn
     enabled: true
     description: "Flags writes to protected system paths."
+  - name: sensitive_plain_phrases
+    type: nlp
+    pattern: "leak password|share ssn|dump database"
+    severity: warning
+    decision: warn
+    enabled: true
+    description: "Flags common risky phrases using NLP phrase matching."

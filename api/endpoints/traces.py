@@ -1,14 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
-from typing import Dict, Any
+from fastapi import APIRouter, Depends, HTTPException, Query
+from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session as OrmSession
+from sqlalchemy import select
 from api.db import get_db
-from api.models import Trace as TraceModel, Session as SessionModel, DecisionEnum
+from api.models import Trace as TraceModel, Session as SessionModel, DecisionEnum, AuditLog
 import uuid
 from agentsentry.verifier.static_rules import StaticVerifier
 from api.verifier_store import store
 
 router = APIRouter(prefix="/traces", tags=["traces"])
-_verifier = store.get()
 
 @router.post("", response_model=Dict)
 def ingest_trace(payload: Dict[str, Any], db: OrmSession = Depends(get_db)):
@@ -22,7 +22,9 @@ def ingest_trace(payload: Dict[str, Any], db: OrmSession = Depends(get_db)):
     content = payload.get("content", {})
 
     # Static verification
-    verdict = _verifier.evaluate(content)
+    # Always fetch current verifier (supports /rules/reload)
+    verifier = store.get()
+    verdict = verifier.evaluate(content)
     decision = verdict["decision"]
     reasons = verdict["reasons"]
 
@@ -37,9 +39,25 @@ def ingest_trace(payload: Dict[str, Any], db: OrmSession = Depends(get_db)):
     )
     db.add(row); db.commit(); db.refresh(row)
 
+    # Audit 'block' decisions
+    if decision == "block":
+        try:
+            db.add(
+                AuditLog(
+                    actor="system",
+                    action="trace_block",
+                    target_type="trace",
+                    target_id=row.id,
+                    details={"reasons": reasons},
+                )
+            )
+            db.commit()
+        except Exception:
+            db.rollback()
+
     # Enqueue dynamic check
     try:
-        from api.queue import get_queue
+        from api.job_queue import get_queue
         q = get_queue()
         q.enqueue("worker.jobs.dynamic_check_trace", row.id)
     except Exception:
@@ -62,3 +80,5 @@ def get_trace(trace_id: str, db: OrmSession = Depends(get_db)):
         "reasons": row.reasons or [],
         "created_at": str(row.created_at),
     }
+
+# Note: session-scoped trace listing is implemented under the sessions router.

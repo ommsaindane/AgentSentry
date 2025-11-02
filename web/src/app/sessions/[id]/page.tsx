@@ -1,7 +1,8 @@
+export const dynamic = "force-dynamic";
 import { api } from "../../../lib/api";
 
-export default async function SessionTracesPage({ params }: { params: { id: string } }) {
-  const sessionId = params.id;
+export default async function SessionTracesPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: sessionId } = await params;
   let traces: Awaited<ReturnType<typeof api.listTracesForSession>> = [];
   let error: string | null = null;
 

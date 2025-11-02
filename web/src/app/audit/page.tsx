@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { api } from "../../lib/api";
 
 export default async function AuditPage({ searchParams }: { searchParams?: Record<string, string> }) {

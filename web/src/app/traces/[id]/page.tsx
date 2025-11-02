@@ -1,7 +1,8 @@
+export const dynamic = "force-dynamic";
 import { api } from "../../../lib/api";
 
-export default async function TraceDetail({ params }: { params: { id: string } }) {
-  const id = params.id;
+export default async function TraceDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   let data: Awaited<ReturnType<typeof api.getTrace>> | null = null;
   let error: string | null = null;
 

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { api, type SessionListItem } from "../lib/api";
 
 export default async function Page() {
